@@ -1,0 +1,72 @@
+class DoubleMatrixFilters : Filters 
+ { 
+ protected float[,] kernel1 = null; 
+ protected float[,] kernel2 = null; 
+ protected DoubleMatrixFilters() { } 
+ public DoubleMatrixFilters(float[,] kernel1, float[,] kernel2) 
+ { 
+ this.kernel1 = kernel1; 
+ this.kernel2 = kernel2; 
+ } 
+ protected override Color calculateNewPixelColor(Bitmap sourceimage, int x, int y) 
+ { 
+ int radX = kernel1.GetLength(0) / 2; 
+ int radY = kernel1.GetLength(1) / 2; 
+ float resultR1 = 0; 
+ float resultG1 = 0; 
+ float resultB1 = 0; 
+ for (int i = -radY; i <= radY; i++) 
+ { 
+ for (int k = -radX; k <= radX; k++) 
+ { 
+ int idX = Clamp(x + k, 0, sourceimage.Width - 1); 
+ int idY = Clamp(y + i, 0, sourceimage.Height - 1); 
+ Color neighbor = sourceimage.GetPixel(idX, idY); 
+ resultR1 += neighbor.R * kernel1[k + radX, i + radY]; 
+ resultG1 += neighbor.G * kernel1[k + radX, i + radY]; 
+ resultB1 += neighbor.B * kernel1[k + radX, i + radY]; 
+ } 
+ } 
+ 
+ int radX2 = kernel2.GetLength(0) / 2; 
+ int radY2 = kernel2.GetLength(1) / 2; 
+ float resultR2 = 0; 
+ float resultG2 = 0; 
+ float resultB2 = 0; 
+ for (int i = -radY; i <= radY; i++) 
+ { 
+ for (int k = -radX; k <= radX; k++) 
+ { 
+ int idX = Clamp(x + k, 0, sourceimage.Width - 1); 
+ int idY = Clamp(y + i, 0, sourceimage.Height - 1); 
+ Color neighbor = sourceimage.GetPixel(idX, idY); 
+ resultR2 += neighbor.R * kernel1[k + radX, i + radY]; 
+ resultG2 += neighbor.G * kernel1[k + radX, i + radY]; 
+ resultB2 += neighbor.B * kernel1[k + radX, i + radY]; 
+ } 
+ } 
+ 
+ return Color.FromArgb( 
+ Clamp((int)Math.Sqrt((resultR1 * resultR1 + resultR2 * resultR2)), 0, 255), 
+ Clamp((int)Math.Sqrt((resultG1 * resultG1 + resultG2 * resultG2)), 0, 255), 
+ Clamp((int)Math.Sqrt((resultB1 * resultB1 + resultB2 * resultB2)), 0, 255)); 
+ } 
+ } 
+ class Sobel: DoubleMatrixFilters 
+ { 
+ public Sobel() 
+ { 
+ kernel1 = new float[3, 3] 
+{ 
+ { -1, 0, 1}, 
+ { -2, 0, 2 }, 
+ { -1, 0, 1 } 
+}; 
+ kernel2 = new float[3, 3] 
+ { 
+ { -1, -2, -1}, 
+ { 0, 0, 0 }, 
+ { 1, 2, 1 } 
+ }; 
+ } 
+ }
