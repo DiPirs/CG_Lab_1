@@ -88,8 +88,8 @@ namespace CG_lab_1
 
             return Color.FromArgb(
                 Clamp((int)resultR, 0, 255),
-                Clamp((int)resultB, 0, 255),
-                Clamp((int)resultG, 0, 255)
+                Clamp((int)resultG, 0, 255),
+                Clamp((int)resultB, 0, 255)
                 );
         }
 
@@ -280,5 +280,18 @@ namespace CG_lab_1
                };
         }
     } // Собель ( границы изображения )
+
+    class SharpnessFilter : MatrixFilter
+    {
+        public SharpnessFilter()
+        {
+            kernel = new float[3, 3]
+               {
+                   {  0,  -1,   0 },
+                   { -1,   5,  -1 },
+                   {  0,  -1,   0 }
+               };
+        }
+    } // Резкость
 }
 
