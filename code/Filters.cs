@@ -17,7 +17,7 @@ namespace CG_lab_1
 
             for (int i = 0; i < sourceImage.Width; i++)
             {
-                worker.ReportProgress((int)((float)(i+1) / resultImage.Width * 100)); // для прогресс бара( для вызова ProgressChanged )
+                worker.ReportProgress((int)((float)i / resultImage.Width * 100));
 
                 if (worker.CancellationPending)
                 {

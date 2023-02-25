@@ -26,10 +26,9 @@ namespace CG_lab_1
 
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e) // Загрузка фото по клику
+        private void pictureBox1_Click(object sender, EventArgs e)
         {
-            pictureBox1.Image = image;
-            pictureBox1.Refresh();
+
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -67,6 +66,8 @@ namespace CG_lab_1
             {
                 image = new Bitmap(LoadDialog.FileName);
             }
+            pictureBox1.Image = image;
+            pictureBox1.Refresh();
         } // Проверка файла и открытие
 
         private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
