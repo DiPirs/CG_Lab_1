@@ -56,7 +56,7 @@ namespace CG_lab_1
         private void button1_Click(object sender, EventArgs e)
         {
             backgroundWorker1.CancelAsync();
-        } // Кнопка отмены
+        } // Кнопка отмены загрузки
 
         private void открытьToolStripMenuItem1_Click(object sender, EventArgs e)
         {
