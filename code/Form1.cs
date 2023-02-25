@@ -58,16 +58,28 @@ namespace CG_lab_1
             backgroundWorker1.CancelAsync();
         } // Кнопка отмены
 
-        private void открытьToolStripMenuItem1_Click(object sender, EventArgs e) // Проверка файла и открытие
+        private void открытьToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-            dialog.Filter = "Image files | *.png; *.jpg; *.bmp; | All Files (*.*) | *.*";
+            OpenFileDialog LoadDialog = new OpenFileDialog();
+            LoadDialog.Filter = "Image files | *.png; *.jpg; *.bmp; | All Files (*.*) | *.*";
 
-            if (dialog.ShowDialog() == DialogResult.OK)
+            if (LoadDialog.ShowDialog() == DialogResult.OK)
             {
-                image = new Bitmap(dialog.FileName);
+                image = new Bitmap(LoadDialog.FileName);
             }
-        }
+        } // Проверка файла и открытие
+
+        private void сохранитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog SaveDialog = new SaveFileDialog();
+
+            SaveDialog.Filter = "Image files | *.png; *.jpg; *.bmp; | All Files (*.*) | *.*";
+
+            if (SaveDialog.ShowDialog() == DialogResult.OK)
+            {
+                image.Save(SaveDialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+            }
+        }  
 
         private void инверсияToolStripMenuItem_Click(object sender, EventArgs e)
         {
