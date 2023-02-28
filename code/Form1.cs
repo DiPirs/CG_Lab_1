@@ -14,6 +14,8 @@ namespace CG_lab_1
     public partial class Form1 : Form
     {
         Bitmap image;
+        Bitmap startImage;
+        //Filters lastFilter = null;
 
         public Form1()
         {
@@ -21,6 +23,7 @@ namespace CG_lab_1
 
         }
 
+        // === Визуал ===
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
@@ -34,7 +37,12 @@ namespace CG_lab_1
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             Bitmap newImage = ((Filters)e.Argument).proccessImage(image, backgroundWorker1);
-            if (backgroundWorker1.CancellationPending != true) { image = newImage; }
+
+            if (backgroundWorker1.CancellationPending != true) 
+            {
+                //lastFilter = (Filters)e.Argument;
+                image = newImage;
+            }
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -50,8 +58,9 @@ namespace CG_lab_1
                 pictureBox1.Refresh();
             }
             progressBar1.Value = 0;
-        } // Почему не подключаетс
+        }
 
+        // === кнопка отмены, меню "файл" ===
         private void button1_Click(object sender, EventArgs e)
         {
             backgroundWorker1.CancelAsync();
@@ -65,6 +74,7 @@ namespace CG_lab_1
             if (LoadDialog.ShowDialog() == DialogResult.OK)
             {
                 image = new Bitmap(LoadDialog.FileName);
+                startImage = image;
             }
             pictureBox1.Image = image;
             pictureBox1.Refresh();
@@ -80,8 +90,16 @@ namespace CG_lab_1
             {
                 image.Save(SaveDialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
-        }  
+        }
 
+        private void вернутьКИсходномуToolStripMenuItem1_Click_1(object sender, EventArgs e)
+        {
+            image = startImage;
+            pictureBox1.Image = image;
+            pictureBox1.Refresh();
+        }
+
+        // === меню "фильтры" ===
         private void инверсияToolStripMenuItem_Click(object sender, EventArgs e)
         {
             InvertFilter filter = new InvertFilter();
@@ -127,6 +145,18 @@ namespace CG_lab_1
         private void резкостьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new SharpnessFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void серыйМирToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new GrayWorldFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void медианныйToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new MedianFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
     }

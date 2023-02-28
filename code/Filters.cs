@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Linq; // для list
 
 namespace CG_lab_1
 {
@@ -11,7 +12,7 @@ namespace CG_lab_1
     {
         protected abstract Color calculateNewPixelColor(Bitmap sourseImage, int x, int y);
 
-        public Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public virtual Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
 
@@ -293,5 +294,40 @@ namespace CG_lab_1
                };
         }
     } // Резкость
+
+    class MedianFilter : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            List<int> AllR = new List<int>();
+            List<int> AllG = new List<int>();
+            List<int> AllB = new List<int>();
+
+            int radiusX = 1;
+            int radiusY = 1;
+
+            for (int k = -radiusX; k <= radiusX; k++)
+            {
+                for (int l = -radiusY; l <= radiusY; l++)
+                {
+                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+                    
+                    Color color = sourceImage.GetPixel(idX, idY);
+
+                    AllR.Add(color.R);
+                    AllG.Add(color.G);
+                    AllB.Add(color.B);
+                }
+            }
+
+            AllR.Sort(); // прочитать
+            AllG.Sort();
+            AllB.Sort();
+
+            return Color.FromArgb(AllR[AllR.Count() / 2], AllG[AllG.Count() / 2], AllB[AllB.Count() / 2]); // прочитать
+        }
+    } // Медианный фильтр
+
 }
 
