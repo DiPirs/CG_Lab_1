@@ -41,7 +41,7 @@ namespace CG_lab_1
 
             return value;
         }
-    }
+    } 
 
     class InvertFilter : Filters
     {
@@ -53,9 +53,9 @@ namespace CG_lab_1
 
             return resultColor;
         }
-    } // инверсия
+    } // инверсия (точечный)
 
-    class MatrixFilter : Filters
+    abstract class MatrixFilter : Filters
     {
         protected float[,] kernel = null;
         protected MatrixFilter() { }
@@ -94,7 +94,7 @@ namespace CG_lab_1
                 );
         }
 
-    }
+    } // Базовый для матричных
 
     class BlurFilter : MatrixFilter
     {
@@ -114,20 +114,19 @@ namespace CG_lab_1
             }
 
         }
-    } // обычное размытие
+    } // обычное размытие (матричный)
 
     class GaussianFilter : MatrixFilter
     {
         public void createGaussianKarnel(int radius, float sigma)
         {
-            // определяем размер ядра
-            int size = 2 * radius + 1;
-            // создаем ядро фильтра
-            kernel = new float[size, size];
-            // коэффицент нормировки ядра
-            float norm = 0;
-            // рассчитываем ядро линейного фильтра
-            for (int i = -radius; i <= radius; i++)
+            int size = 2 * radius + 1; // определяем размер ядра
+
+            kernel = new float[size, size]; // создаем ядро фильтра
+
+            float norm = 0; // коэффицент нормировки ядра
+
+            for (int i = -radius; i <= radius; i++) // рассчитываем ядро линейного фильтра
             {
                 for (int j = -radius; j <= radius; j++)
                 {
@@ -135,8 +134,8 @@ namespace CG_lab_1
                     norm += kernel[i + radius, j + radius];
                 }
             }
-            // нормируем ядро
-            for (int i = 0; i < size; i++)
+
+            for (int i = 0; i < size; i++)  // нормируем ядро
             {
                 for (int j = 0; j < size; j++)
                 {
@@ -148,7 +147,7 @@ namespace CG_lab_1
         {
             createGaussianKarnel(3, 2);
         }
-    } // размытие по Гаусу
+    } // размытие по Гаусу (матричный)
 
     class GrayScaleFilter : Filters
     {
@@ -160,7 +159,7 @@ namespace CG_lab_1
 
             return resultColor;
         }
-    } // черно-белый фильтр
+    } // черно-белый фильтр (точечный)
 
     class Sepiya : Filters
     {
@@ -180,7 +179,7 @@ namespace CG_lab_1
                 Clamp((int)resultB, 0, 255)
                 );
         }
-    } // сепия
+    } // сепия (точечный)
 
     class BrightnessFilter : Filters
     {
@@ -198,9 +197,9 @@ namespace CG_lab_1
                 Clamp((int)resultB, 0, 255)
                 );
         }
-    } // увеличивание яркости
+    } // увеличивание яркости (точечный)
 
-    class DoubleMatrixFilters : Filters
+    abstract class DoubleMatrixFilters : Filters
     {
         protected float[,] kernel1 = null;
         protected float[,] kernel2 = null;
@@ -261,7 +260,7 @@ namespace CG_lab_1
             Clamp((int)Math.Sqrt((resultG1 * resultG1 + resultG2 * resultG2)), 0, 255),
             Clamp((int)Math.Sqrt((resultB1 * resultB1 + resultB2 * resultB2)), 0, 255));
         }
-    }
+    } // базовый для границ
 
     class SobelFilter : DoubleMatrixFilters
     {
@@ -280,7 +279,7 @@ namespace CG_lab_1
                    {  1,  2,  1 }
                };
         }
-    } // Собель ( границы изображения )
+    } // Собель ( границы изображения, матричный )
 
     class SharpnessFilter : MatrixFilter
     {
@@ -293,7 +292,7 @@ namespace CG_lab_1
                    {  0,  -1,   0 }
                };
         }
-    } // Резкость
+    } // Резкость (матричный)
 
     class MedianFilter : Filters
     {
@@ -321,13 +320,15 @@ namespace CG_lab_1
                 }
             }
 
-            AllR.Sort(); // прочитать
+            AllR.Sort(); 
             AllG.Sort();
             AllB.Sort();
 
-            return Color.FromArgb(AllR[AllR.Count() / 2], AllG[AllG.Count() / 2], AllB[AllB.Count() / 2]); // прочитать
+            return Color.FromArgb(AllR[AllR.Count() / 2], AllG[AllG.Count() / 2], AllB[AllB.Count() / 2]);
+            // При медианной фильтрации (i,j)-му пикселу присваивается медианное значение яркости,
+            // т.е. такое значение, частота которого равна 0,5.
         }
-    } // Медианный фильтр
+    } // Медианный фильтр (нелинейный)
 
 }
 
