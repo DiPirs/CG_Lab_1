@@ -53,7 +53,95 @@ namespace CG_lab_1
 
             return resultColor;
         }
-    } // инверсия (точечный)
+    }  // инверсия ( точечный )
+
+    class GrayScaleFilter : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        {
+            Color sourceColor = sourseImage.GetPixel(x, y);
+
+            int intensity = (int)((sourceColor.R * 0.36) + (sourceColor.G * 0.53) + (sourceColor.B * 0.11));
+
+            Color resultColor = Color.FromArgb(intensity, intensity, intensity); // делает цвета по R, G, B соответственно
+
+            return resultColor;
+        }
+    } // черно-белый фильтр ( точечный )
+
+    class Sepiya : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        {
+            Color sourceColor = sourseImage.GetPixel(x, y);
+
+            int intensity = (int)((sourceColor.R * 0.36) + (sourceColor.G * 0.53) + (sourceColor.B * 0.11));
+
+            int resultR = (int)(intensity + 2 * 9);
+            int resultB = (int)(intensity + 0.5 * 9);
+            int resultG = (int)(intensity - 1 * 9);
+
+            return Color.FromArgb(
+                Clamp((int)resultR, 0, 255),
+                Clamp((int)resultG, 0, 255),
+                Clamp((int)resultB, 0, 255)
+                );
+        }
+    } // сепия ( точечный )
+
+    class BrightnessFilter : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        {
+            Color sourceColor = sourseImage.GetPixel(x, y);
+
+            int resultR = sourceColor.R + 50;
+            int resultG = sourceColor.G + 50;
+            int resultB = sourceColor.B + 50;
+
+            return Color.FromArgb(
+                Clamp((int)resultR, 0, 255),
+                Clamp((int)resultG, 0, 255),
+                Clamp((int)resultB, 0, 255)
+                );
+        }
+    } // увеличивание яркости ( точечный )
+
+    class MedianFilter : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            List<int> AllR = new List<int>();
+            List<int> AllG = new List<int>();
+            List<int> AllB = new List<int>();
+
+            int radiusX = 1;
+            int radiusY = 1;
+
+            for (int k = -radiusX; k <= radiusX; k++)
+            {
+                for (int l = -radiusY; l <= radiusY; l++)
+                {
+                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                    Color color = sourceImage.GetPixel(idX, idY);
+
+                    AllR.Add(color.R);
+                    AllG.Add(color.G);
+                    AllB.Add(color.B);
+                }
+            }
+
+            AllR.Sort();
+            AllG.Sort();
+            AllB.Sort();
+
+            return Color.FromArgb(AllR[AllR.Count() / 2], AllG[AllG.Count() / 2], AllB[AllB.Count() / 2]);
+            // При медианной фильтрации (i,j)-му пикселу присваивается медианное значение яркости,
+            // т.е. такое значение, частота которого равна 0,5.
+        }
+    } // Медианный фильтр ( нелинейный )
 
     abstract class MatrixFilter : Filters
     {
@@ -94,7 +182,7 @@ namespace CG_lab_1
                 );
         }
 
-    } // Базовый для матричных
+    }
 
     class BlurFilter : MatrixFilter
     {
@@ -114,7 +202,7 @@ namespace CG_lab_1
             }
 
         }
-    } // обычное размытие (матричный)
+    } // обычное размытие ( матричный )
 
     class GaussianFilter : MatrixFilter
     {
@@ -147,57 +235,20 @@ namespace CG_lab_1
         {
             createGaussianKarnel(3, 2);
         }
-    } // размытие по Гаусу (матричный)
+    } // размытие по Гаусу ( матричный )
 
-    class GrayScaleFilter : Filters
+    class SharpnessFilter : MatrixFilter
     {
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        public SharpnessFilter()
         {
-            Color sourceColor = sourseImage.GetPixel(x, y);
-            int grayScale = (int)((sourceColor.R * 0.36) + (sourceColor.G * 0.53) + (sourceColor.B * 0.11));
-            Color resultColor = Color.FromArgb(grayScale, grayScale, grayScale); // делает цвета по R, G, B соответственно
-
-            return resultColor;
+            kernel = new float[3, 3]
+               {
+                   {  0,  -1,   0 },
+                   { -1,   5,  -1 },
+                   {  0,  -1,   0 }
+               };
         }
-    } // черно-белый фильтр (точечный)
-
-    class Sepiya : Filters
-    {
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
-        {
-            Color sourceColor = sourseImage.GetPixel(x, y);
-
-            int intensity = (int)((sourceColor.R * 0.36) + (sourceColor.G * 0.53) + (sourceColor.B * 0.11));
-
-            int resultR = (int)(intensity + 2 * 9);
-            int resultB = (int)(intensity + 0.5 * 9);
-            int resultG = (int)(intensity - 1 * 9);
-
-            return Color.FromArgb(
-                Clamp((int)resultR, 0, 255),
-                Clamp((int)resultG, 0, 255),
-                Clamp((int)resultB, 0, 255)
-                );
-        }
-    } // сепия (точечный)
-
-    class BrightnessFilter : Filters
-    {
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
-        {
-            Color sourceColor = sourseImage.GetPixel(x, y);
-
-            int resultR = sourceColor.R + 50;
-            int resultG = sourceColor.G + 50;
-            int resultB = sourceColor.B + 50;
-
-            return Color.FromArgb(
-                Clamp((int)resultR, 0, 255),
-                Clamp((int)resultG, 0, 255),
-                Clamp((int)resultB, 0, 255)
-                );
-        }
-    } // увеличивание яркости (точечный)
+    } // Резкость ( матричный )
 
     abstract class DoubleMatrixFilters : Filters
     {
@@ -260,19 +311,19 @@ namespace CG_lab_1
             Clamp((int)Math.Sqrt((resultG1 * resultG1 + resultG2 * resultG2)), 0, 255),
             Clamp((int)Math.Sqrt((resultB1 * resultB1 + resultB2 * resultB2)), 0, 255));
         }
-    } // базовый для границ
+    }
 
     class SobelFilter : DoubleMatrixFilters
     {
         public SobelFilter()
         {
-            kernel1 = new float[3, 3]
+            kernel1 = new float[3, 3] // по оси Х
                {
                    { -1,  0,  1 },
                    { -2,  0,  2 },
                    { -1,  0,  1 }
                };
-            kernel2 = new float[3, 3]
+            kernel2 = new float[3, 3] // по оси Y
                {
                    { -1, -2, -1 },
                    {  0,  0,  0 },
@@ -281,54 +332,44 @@ namespace CG_lab_1
         }
     } // Собель ( границы изображения, матричный )
 
-    class SharpnessFilter : MatrixFilter
+    class SharraFilter : DoubleMatrixFilters
     {
-        public SharpnessFilter()
+        public SharraFilter()
         {
-            kernel = new float[3, 3]
+            kernel1 = new float[3, 3]
                {
-                   {  0,  -1,   0 },
-                   { -1,   5,  -1 },
-                   {  0,  -1,   0 }
+                   { 3,  0, -3  },
+                   { 10, 0, -10 },
+                   { 3,  0, -3  }
+               };
+
+            kernel2 = new float[3, 3]
+               {
+                   {  3,  10,  3 },
+                   {  0,   0,  0 },
+                   { -3, -10, -3 }
                };
         }
-    } // Резкость (матричный)
+    } // Щарра ( границы изображения, матричный )
 
-    class MedianFilter : Filters
+    class PruittaFilter : DoubleMatrixFilters
     {
-        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        public PruittaFilter()
         {
-            List<int> AllR = new List<int>();
-            List<int> AllG = new List<int>();
-            List<int> AllB = new List<int>();
+            kernel1 = new float[3, 3]
+               {
+                   { -1,  0, 1  },
+                   { -1, 0, 1 },
+                   { -1,  0, 1  }
+               };
 
-            int radiusX = 1;
-            int radiusY = 1;
-
-            for (int k = -radiusX; k <= radiusX; k++)
-            {
-                for (int l = -radiusY; l <= radiusY; l++)
-                {
-                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
-                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
-                    
-                    Color color = sourceImage.GetPixel(idX, idY);
-
-                    AllR.Add(color.R);
-                    AllG.Add(color.G);
-                    AllB.Add(color.B);
-                }
-            }
-
-            AllR.Sort(); 
-            AllG.Sort();
-            AllB.Sort();
-
-            return Color.FromArgb(AllR[AllR.Count() / 2], AllG[AllG.Count() / 2], AllB[AllB.Count() / 2]);
-            // При медианной фильтрации (i,j)-му пикселу присваивается медианное значение яркости,
-            // т.е. такое значение, частота которого равна 0,5.
+            kernel2 = new float[3, 3]
+               {
+                   {  -1, -1,  -1 },
+                   {  0,   0,  0 },
+                   { 1, 1, 1 }
+               };
         }
-    } // Медианный фильтр (нелинейный)
-
+    } // Приюитта ( границы изображения, матричный )
 }
 

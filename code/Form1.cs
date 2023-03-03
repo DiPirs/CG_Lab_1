@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-
 namespace CG_lab_1
 {
     public partial class Form1 : Form
@@ -22,7 +21,7 @@ namespace CG_lab_1
 
         }
 
-        // === Визуал, backgroundWorker ===
+        // === Визуал, backgroundWorker, кнопка "Отмена" ===
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
@@ -59,12 +58,12 @@ namespace CG_lab_1
             progressBar1.Value = 0;
         }
 
-        // === кнопка отмены, меню "Файл", меню "Правка" ===
         private void button1_Click(object sender, EventArgs e)
         {
             backgroundWorker1.CancelAsync();
         } // Кнопка отмены загрузки
-
+        
+        // === меню "Файл" ===
         private void открытьToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             OpenFileDialog LoadDialog = new OpenFileDialog();
@@ -91,6 +90,7 @@ namespace CG_lab_1
             }
         }
 
+        // === меню "Правка" ===
         private void вернутьКИсходномуToolStripMenuItem1_Click_1(object sender, EventArgs e)
         {
             image = startImage;
@@ -102,18 +102,6 @@ namespace CG_lab_1
         private void инверсияToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new InvertFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
-        }
-
-        private void размытиеToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            Filters filter = new BlurFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
-        }
-
-        private void размытиеПоГауссуToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Filters filter = new GaussianFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
@@ -135,6 +123,18 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
+        private void размытиеToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Filters filter = new BlurFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void размытиеПоГауссуToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new GaussianFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
         private void собельToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new SobelFilter();
@@ -144,6 +144,18 @@ namespace CG_lab_1
         private void резкостьToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new SharpnessFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void щарраToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new SharraFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void прюиттаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new PruittaFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
