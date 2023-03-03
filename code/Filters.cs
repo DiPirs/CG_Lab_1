@@ -10,9 +10,9 @@ namespace CG_lab_1
 {
     abstract class Filters
     {
-        protected abstract Color calculateNewPixelColor(Bitmap sourseImage, int x, int y);
+        protected abstract Color calculateNewPixelColor(Bitmap sourceImage, int x, int y);
 
-        public virtual Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public virtual Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
 
@@ -41,14 +41,14 @@ namespace CG_lab_1
 
             return value;
         }
-    } 
+    }  
 
     class InvertFilter : Filters
     {
         public InvertFilter() { }
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
-            Color sourceColor = sourseImage.GetPixel(x, y);
+            Color sourceColor = sourceImage.GetPixel(x, y);
             Color resultColor = Color.FromArgb(255 - sourceColor.R, 255 - sourceColor.G, 255 - sourceColor.B);
 
             return resultColor;
@@ -57,9 +57,9 @@ namespace CG_lab_1
 
     class GrayScaleFilter : Filters
     {
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
-            Color sourceColor = sourseImage.GetPixel(x, y);
+            Color sourceColor = sourceImage.GetPixel(x, y);
 
             int intensity = (int)((sourceColor.R * 0.36) + (sourceColor.G * 0.53) + (sourceColor.B * 0.11));
 
@@ -71,9 +71,9 @@ namespace CG_lab_1
 
     class Sepiya : Filters
     {
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
-            Color sourceColor = sourseImage.GetPixel(x, y);
+            Color sourceColor = sourceImage.GetPixel(x, y);
 
             int intensity = (int)((sourceColor.R * 0.36) + (sourceColor.G * 0.53) + (sourceColor.B * 0.11));
 
@@ -91,9 +91,9 @@ namespace CG_lab_1
 
     class BrightnessFilter : Filters
     {
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
-            Color sourceColor = sourseImage.GetPixel(x, y);
+            Color sourceColor = sourceImage.GetPixel(x, y);
 
             int resultR = sourceColor.R + 50;
             int resultG = sourceColor.G + 50;
@@ -106,6 +106,113 @@ namespace CG_lab_1
                 );
         }
     } // увеличивание яркости ( точечный )
+
+    class MoveFilter : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            if (x + 50 < sourceImage.Width) 
+            { 
+                return sourceImage.GetPixel(x + 50, y); 
+            }
+            else { return Color.FromArgb(0, 0, 0); }
+        }
+    } // сдвиг влево ( точечный )
+
+    class Revolut90Filet : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int x0 = sourceImage.Width / 2;
+            int y0 = sourceImage.Height / 2; // x0, y0 - центр поворота
+
+            double phi = Math.PI / 2; // угол поворота
+
+            int new_x = (int)((x - x0) * Math.Cos(phi)) - (int)((y - y0) * Math.Sin(phi)) + x0;
+            int new_y = (int)((x - x0) * Math.Sin(phi)) + (int)((y - y0) * Math.Cos(phi)) + y0;
+
+            if (new_x >= 0 && new_x < sourceImage.Width && new_y >= 0 && new_y < sourceImage.Height)
+            {
+                return sourceImage.GetPixel(new_x, new_y);
+            }
+            else
+            {
+                return Color.FromArgb(0, 0, 0);
+            }
+        }
+    } // перевернуть фото на 90 градусов ( точечный )
+
+    class Revolut180Filet : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int x0 = sourceImage.Width / 2;
+            int y0 = sourceImage.Height / 2; // x0, y0 - центр поворота
+
+            double phi = Math.PI; // угол поворота
+
+            int new_x = (int)((x - x0) * Math.Cos(phi)) - (int)((y - y0) * Math.Sin(phi)) + x0;
+            int new_y = (int)((x - x0) * Math.Sin(phi)) + (int)((y - y0) * Math.Cos(phi)) + y0;
+
+            if (new_x >= 0 && new_x < sourceImage.Width && new_y >= 0 && new_y < sourceImage.Height)
+            {
+                return sourceImage.GetPixel(new_x, new_y);
+            }
+            else
+            {
+                return Color.FromArgb(0, 0, 0);
+            }
+        }
+    } // перевернуть фото на 180 градусов ( точечный )
+
+    class WaveFirstFilet : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int newX = x + (int)(20 * Math.Sin(2 * Math.PI * x / 60));
+            int newY = y;
+
+            newX = Clamp(newX, 0, sourceImage.Width - 1);
+            newY = Clamp(newY, 0, sourceImage.Height - 1);
+
+            return sourceImage.GetPixel(newX, newY);
+        }
+    } // вертикальные волны ( точечный )
+
+    class WaveSecondFilet : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int newX = x + (int)(20 * Math.Sin(2 * Math.PI * y / 30));
+            int newY = y;
+
+            newX = Clamp(newX, 0, sourceImage.Width - 1);
+            newY = Clamp(newY, 0, sourceImage.Height - 1);
+
+            return sourceImage.GetPixel(newX, newY);
+        }
+    } // горизонтальные волны ( точечный )
+
+    class GlassFilet : Filters
+    {
+        protected readonly Random rand = new Random();
+        // readonly указывает на то, что присвоение значения полю может происходить только при объявлении
+        // или в конструкторе этого класса. Ключевое слово readonly отличается от ключевого слова const.
+        // Поле const может быть инициализировано только при объявлении поля.
+        // Поле readonly может быть назначено несколько раз в объявлении поля и в любом конструкторе. 
+
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int newX = x + (int)((rand.NextDouble() - 0.5) * 10);
+            int newY = y + (int)((rand.NextDouble() - 0.5) * 10);
+            // .NextDouble - возвращает случайное число типа double, которое больше или равно 0.0 и меньше 1.0
+
+            newX = Clamp(newX, 0, sourceImage.Width - 1);
+            newY = Clamp(newY, 0, sourceImage.Height - 1);
+
+            return sourceImage.GetPixel(newX, newY);
+        }
+    } // горизонтальные волны ( точечный )
 
     class MedianFilter : Filters
     {
@@ -151,7 +258,7 @@ namespace CG_lab_1
         {
             this.kernel = kernel;
         }
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
             int radiusX = kernel.GetLength(0) / 2;
             int radiusY = kernel.GetLength(1) / 2;
@@ -164,10 +271,10 @@ namespace CG_lab_1
             {
                 for (int k = -radiusX; k <= radiusX; k++)
                 {
-                    int idX = Clamp(x + k, 0, sourseImage.Width - 1);
-                    int idY = Clamp(y + l, 0, sourseImage.Height - 1);
+                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
 
-                    Color neighborColor = sourseImage.GetPixel(idX, idY);
+                    Color neighborColor = sourceImage.GetPixel(idX, idY);
 
                     resultR += neighborColor.R * kernel[k + radiusX, l + radiusY];
                     resultG += neighborColor.G * kernel[k + radiusX, l + radiusY];
@@ -188,8 +295,8 @@ namespace CG_lab_1
     {
         public BlurFilter()
         {
-            int sizeX = 3;
-            int sizeY = 3;
+            int sizeX = 5;
+            int sizeY = 5;
 
             kernel = new float[sizeX, sizeY];
 
@@ -237,6 +344,22 @@ namespace CG_lab_1
         }
     } // размытие по Гаусу ( матричный )
 
+    class MotionBlurFilter : MatrixFilter
+    {
+        public MotionBlurFilter()
+        {
+            int size = 5; // кол-во стобцов или строк
+
+            kernel = new float[size, size];
+
+            for (int i = 0; i < size; i++)
+            {
+                kernel[i, i] = 1.0f / (float)(size);
+            }
+
+        }
+    } // обычное размытие ( матричный )
+
     class SharpnessFilter : MatrixFilter
     {
         public SharpnessFilter()
@@ -275,54 +398,54 @@ namespace CG_lab_1
         }
         protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
-            int radX = kernel1.GetLength(0) / 2;
-            int radY = kernel1.GetLength(1) / 2;
+            int radiusX = kernel1.GetLength(0) / 2;
+            int radiusY = kernel1.GetLength(1) / 2;
 
             float resultR1 = 0;
             float resultG1 = 0;
             float resultB1 = 0;
 
-            for (int i = -radY; i <= radY; i++)
+            for (int i = -radiusY; i <= radiusY; i++)
             {
-                for (int k = -radX; k <= radX; k++)
+                for (int k = -radiusX; k <= radiusX; k++)
                 {
                     int idX = Clamp(x + k, 0, sourceImage.Width - 1);
                     int idY = Clamp(y + i, 0, sourceImage.Height - 1);
 
                     Color neighbor = sourceImage.GetPixel(idX, idY);
 
-                    resultR1 += neighbor.R * kernel1[k + radX, i + radY];
-                    resultG1 += neighbor.G * kernel1[k + radX, i + radY];
-                    resultB1 += neighbor.B * kernel1[k + radX, i + radY];
+                    resultR1 += neighbor.R * kernel1[k + radiusX, i + radiusY];
+                    resultG1 += neighbor.G * kernel1[k + radiusX, i + radiusY];
+                    resultB1 += neighbor.B * kernel1[k + radiusX, i + radiusY];
                 }
             }
 
-            int radX2 = kernel2.GetLength(0) / 2;
-            int radY2 = kernel2.GetLength(1) / 2;
+            int radiusX2 = kernel2.GetLength(0) / 2;
+            int radiusY2 = kernel2.GetLength(1) / 2;
 
             float resultR2 = 0;
             float resultG2 = 0;
             float resultB2 = 0;
 
-            for (int i = -radY; i <= radY; i++)
+            for (int i = -radiusY2; i <= radiusY2; i++)
             {
-                for (int k = -radX; k <= radX; k++)
+                for (int k = -radiusX2; k <= radiusX2; k++)
                 {
                     int idX = Clamp(x + k, 0, sourceImage.Width - 1);
                     int idY = Clamp(y + i, 0, sourceImage.Height - 1);
 
                     Color neighbor = sourceImage.GetPixel(idX, idY);
 
-                    resultR2 += neighbor.R * kernel1[k + radX, i + radY];
-                    resultG2 += neighbor.G * kernel1[k + radX, i + radY];
-                    resultB2 += neighbor.B * kernel1[k + radX, i + radY];
+                    resultR2 += neighbor.R * kernel2[k + radiusX2, i + radiusY2];
+                    resultG2 += neighbor.G * kernel2[k + radiusX2, i + radiusY2];
+                    resultB2 += neighbor.B * kernel2[k + radiusX2, i + radiusY2];
                 }
             }
 
             return Color.FromArgb(
-            Clamp((int)Math.Sqrt((resultR1 * resultR1 + resultR2 * resultR2)), 0, 255),
-            Clamp((int)Math.Sqrt((resultG1 * resultG1 + resultG2 * resultG2)), 0, 255),
-            Clamp((int)Math.Sqrt((resultB1 * resultB1 + resultB2 * resultB2)), 0, 255));
+            Clamp((int)Math.Sqrt(resultR1 * resultR1 + resultR2 * resultR2), 0, 255),
+            Clamp((int)Math.Sqrt(resultG1 * resultG1 + resultG2 * resultG2), 0, 255),
+            Clamp((int)Math.Sqrt(resultB1 * resultB1 + resultB2 * resultB2), 0, 255));
         }
     }
 

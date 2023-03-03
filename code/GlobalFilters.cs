@@ -18,9 +18,9 @@ namespace CG_lab_1
         protected int maxG, minG;
         protected int maxB, minB;
 
-        public void GetAverageColor(Bitmap sourseImage)
+        public void GetAverageColor(Bitmap sourceImage)
         {
-            Color color = sourseImage.GetPixel(0, 0);
+            Color color = sourceImage.GetPixel(0, 0);
 
             float resultR = 0;
             float resultG = 0;
@@ -28,11 +28,11 @@ namespace CG_lab_1
 
             r1 = b1 = g1 = 0;
 
-            for (int i = 0; i < sourseImage.Width; i++)
+            for (int i = 0; i < sourceImage.Width; i++)
             {
-                for (int j = 0; j < sourseImage.Height; j++)
+                for (int j = 0; j < sourceImage.Height; j++)
                 {
-                    color = sourseImage.GetPixel(i, j);
+                    color = sourceImage.GetPixel(i, j);
 
                     resultR += color.R;
                     resultG += color.G;
@@ -40,20 +40,20 @@ namespace CG_lab_1
                 }
             }
 
-            r1 = ((int)resultR / sourseImage.Width * sourseImage.Height);
-            g1 = ((int)resultG / sourseImage.Width * sourseImage.Height);
-            b1 = ((int)resultB / sourseImage.Width * sourseImage.Height);
+            r1 = ((int)resultR / sourceImage.Width * sourceImage.Height);
+            g1 = ((int)resultG / sourceImage.Width * sourceImage.Height);
+            b1 = ((int)resultB / sourceImage.Width * sourceImage.Height);
         }
 
-        public void GetMaxColor(Bitmap sourseImage)
+        public void GetMaxColor(Bitmap sourceImage)
         {
             maxR = maxG = maxB = 0;
 
-            for (int i = 0; i < sourseImage.Width; i++)
+            for (int i = 0; i < sourceImage.Width; i++)
             {
-                for (int j = 0; j < sourseImage.Height; j++)
+                for (int j = 0; j < sourceImage.Height; j++)
                 {
-                    Color color = sourseImage.GetPixel(i, j);
+                    Color color = sourceImage.GetPixel(i, j);
 
                     maxR = Math.Max(maxR, color.R);
                     maxB = Math.Max(maxB, color.B);
@@ -62,15 +62,15 @@ namespace CG_lab_1
             }
         }
 
-        public void GetMinColor(Bitmap sourseImage)
+        public void GetMinColor(Bitmap sourceImage)
         {
             minR = minG = minB = 0;
 
-            for (int i = 0; i < sourseImage.Width; i++)
+            for (int i = 0; i < sourceImage.Width; i++)
             {
-                for (int j = 0; j < sourseImage.Height; j++)
+                for (int j = 0; j < sourceImage.Height; j++)
                 {
-                    Color color = sourseImage.GetPixel(i, j);
+                    Color color = sourceImage.GetPixel(i, j);
 
                     minR = Math.Min(minR, color.R);
                     minB = Math.Min(minB, color.B);
@@ -84,7 +84,7 @@ namespace CG_lab_1
     {
         protected float avg;
 
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
 
@@ -110,9 +110,9 @@ namespace CG_lab_1
             return resultImage;
         }
 
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
-            Color color = sourseImage.GetPixel(x, y);
+            Color color = sourceImage.GetPixel(x, y);
 
             float R = color.R * avg / r1;
             float G = color.G * avg / g1;
@@ -126,44 +126,44 @@ namespace CG_lab_1
         }
     }
 
-    class LinelRastyaga : GlobalFilters
-    {
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
-        {
-            Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
+    //class LinelRastyaga : GlobalFilters
+    //{
+    //    public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
+    //    {
+    //        Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
 
-            GetMaxColor(sourceImage);
-            GetMinColor(sourceImage);
+    //        GetMaxColor(sourceImage);
+    //        GetMinColor(sourceImage);
 
-            for (int i = 0; i < sourceImage.Width; i++)
-            {
-                worker.ReportProgress((int)((float)i / resultImage.Width * 100));
+    //        for (int i = 0; i < sourceImage.Width; i++)
+    //        {
+    //            worker.ReportProgress((int)((float)i / resultImage.Width * (100 - 33 - 33))+(33+33));
 
-                if (worker.CancellationPending)
-                {
-                    return null;
-                }
+    //            if (worker.CancellationPending)
+    //            {
+    //                return null;
+    //            }
 
-                for (int j = 0; j < sourceImage.Height; j++)
-                {
-                    resultImage.SetPixel(i, j, calculateNewPixelColor(sourceImage, i, j));
-                }
-            }
+    //            for (int j = 0; j < sourceImage.Height; j++)
+    //            {
+    //                resultImage.SetPixel(i, j, calculateNewPixelColor(sourceImage, i, j));
+    //            }
+    //        }
 
-            return resultImage;
-        }
+    //        return resultImage;
+    //    }
 
-        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
-        {
-            Color color = sourseImage.GetPixel(x, y);
+    //    protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+    //    {
+    //        Color color = sourceImage.GetPixel(x, y);
 
-            int R = (color.R - minR) * 255 / (maxR - minR);
-            int G = (color.G - minG) * 255 / (maxG - minG);
-            int B = (color.B - minB) * 255 / (maxB - minB);
+    //        int R = (color.R - minR) * 255 / (maxR - minR);
+    //        int G = (color.G - minG) * 255 / (maxG - minG);
+    //        int B = (color.B - minB) * 255 / (maxB - minB);
 
-            return Color.FromArgb(Clamp((int)R, 0, 255),
-                                  Clamp((int)G, 0, 255),
-                                  Clamp((int)B, 0, 255));
-        }
-    } // НЕ РАБОТАЕТ 
+    //        return Color.FromArgb(Clamp((int)R, 0, 255),
+    //                              Clamp((int)G, 0, 255),
+    //                              Clamp((int)B, 0, 255));
+    //    }
+    //} // НЕ РАБОТАЕТ 
 }

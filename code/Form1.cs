@@ -13,6 +13,7 @@ namespace CG_lab_1
     {
         Bitmap image;
         Bitmap startImage;
+        Bitmap undoImage;
         //Filters lastFilter = null;
 
         public Form1()
@@ -34,11 +35,11 @@ namespace CG_lab_1
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            Bitmap newImage = ((Filters)e.Argument).proccessImage(image, backgroundWorker1);
+            Bitmap newImage = ((Filters)e.Argument).processImage(image, backgroundWorker1);
 
-            if (backgroundWorker1.CancellationPending != true) 
+            if (backgroundWorker1.CancellationPending != true)
             {
-                //lastFilter = (Filters)e.Argument;
+                undoImage = image;
                 image = newImage;
             }
         }
@@ -62,7 +63,7 @@ namespace CG_lab_1
         {
             backgroundWorker1.CancelAsync();
         } // Кнопка отмены загрузки
-        
+
         // === меню "Файл" ===
         private void открытьToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -91,7 +92,14 @@ namespace CG_lab_1
         }
 
         // === меню "Правка" ===
-        private void вернутьКИсходномуToolStripMenuItem1_Click_1(object sender, EventArgs e)
+        private void вернутьНазадToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            image = undoImage;
+            pictureBox1.Image = image;
+            pictureBox1.Refresh();
+        }
+
+        private void вернутьКИсходномуToolStripMenuItem_Click(object sender, EventArgs e)
         {
             image = startImage;
             pictureBox1.Image = image;
@@ -132,6 +140,12 @@ namespace CG_lab_1
         private void размытиеПоГауссуToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Filters filter = new GaussianFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void размытиеВДвиженииToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new MotionBlurFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
@@ -219,10 +233,41 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
-        private void линейноеРастяжениеToolStripMenuItem_Click(object sender, EventArgs e)
+        private void переносToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new LinelRastyaga();
+            Filters filter = new MoveFilter();
             backgroundWorker1.RunWorkerAsync(filter);
-        } // НЕ РАБОТАЕТ
+        }
+
+        private void поворотНа90ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new Revolut90Filet();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void поворотНа180ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new Revolut180Filet();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void волныПервыйТипToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new WaveFirstFilet();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void волныВторойТипToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new WaveSecondFilet();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void эффектСтеклаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new GlassFilet();
+            backgroundWorker1.RunWorkerAsync(filter);
+
+        }
     }
 }

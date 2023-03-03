@@ -103,23 +103,23 @@ namespace CG_lab_1
 
     class OpeningFilter : MathMorphols
     {
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Filters first = new ErosionFilter();
             Filters second = new DilationFilter();
 
-            return first.proccessImage(second.proccessImage(sourceImage, worker), worker);
+            return first.processImage(second.processImage(sourceImage, worker), worker);
         }
     } // открытие ( подавляет "белый" шум на объектах, если фон без шума)
 
     class ClosingFilter : MathMorphols
     {
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Filters first = new DilationFilter();
             Filters second = new ErosionFilter();
 
-            return second.proccessImage(second.proccessImage(sourceImage, worker), worker);
+            return second.processImage(second.processImage(sourceImage, worker), worker);
         }
     } // закрытие ( подавляет "черный" шум на объектах, если фон без шума )
 
@@ -127,11 +127,11 @@ namespace CG_lab_1
     {
         protected Bitmap closingImage;
 
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
             Filters filter = new ClosingFilter();
-            closingImage = filter.proccessImage(sourceImage, worker);
+            closingImage = filter.processImage(sourceImage, worker);
 
             for (int i = 0; i < sourceImage.Width; i++)
             {
@@ -162,12 +162,12 @@ namespace CG_lab_1
     {
         protected Bitmap openingImage;
 
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
             Filters filter = new ErosionFilter(); // Так не правильно, если судить по формуле, но оно выдает то, что нужно
             //Filters filter = new OpeningFilter(); - по сути, нам нужно вот это
-            openingImage = filter.proccessImage(sourceImage, worker);
+            openingImage = filter.processImage(sourceImage, worker);
 
             for (int i = 0; i < sourceImage.Width; i++)
             {
@@ -202,15 +202,15 @@ namespace CG_lab_1
         protected Bitmap ErosionImage;
         protected Bitmap DilationImage;
 
-        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
 
             Filters Erosion = new ErosionFilter();
             Filters Dilation = new DilationFilter();
             
-            ErosionImage = Erosion.proccessImage(sourceImage, worker);
-            DilationImage = Dilation.proccessImage(sourceImage, worker);
+            ErosionImage = Erosion.processImage(sourceImage, worker);
+            DilationImage = Dilation.processImage(sourceImage, worker);
 
             for (int i = 0; i < sourceImage.Width; i++)
             {
