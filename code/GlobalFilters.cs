@@ -4,6 +4,7 @@ using System.Text;
 using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace CG_lab_1
 {
@@ -12,6 +13,10 @@ namespace CG_lab_1
         protected float r1; // среднее по каналу R
         protected float g1; // среднее по каналу G
         protected float b1; // среднее по каналу B
+
+        protected int maxR, minR;
+        protected int maxG, minG;
+        protected int maxB, minB;
 
         public void GetAverageColor(Bitmap sourseImage)
         {
@@ -38,6 +43,40 @@ namespace CG_lab_1
             r1 = ((int)resultR / sourseImage.Width * sourseImage.Height);
             g1 = ((int)resultG / sourseImage.Width * sourseImage.Height);
             b1 = ((int)resultB / sourseImage.Width * sourseImage.Height);
+        }
+
+        public void GetMaxColor(Bitmap sourseImage)
+        {
+            maxR = maxG = maxB = 0;
+
+            for (int i = 0; i < sourseImage.Width; i++)
+            {
+                for (int j = 0; j < sourseImage.Height; j++)
+                {
+                    Color color = sourseImage.GetPixel(i, j);
+
+                    maxR = Math.Max(maxR, color.R);
+                    maxB = Math.Max(maxB, color.B);
+                    maxG = Math.Max(maxG, color.G);
+                }
+            }
+        }
+
+        public void GetMinColor(Bitmap sourseImage)
+        {
+            minR = minG = minB = 0;
+
+            for (int i = 0; i < sourseImage.Width; i++)
+            {
+                for (int j = 0; j < sourseImage.Height; j++)
+                {
+                    Color color = sourseImage.GetPixel(i, j);
+
+                    minR = Math.Min(minR, color.R);
+                    minB = Math.Min(minB, color.B);
+                    minG = Math.Min(minG, color.G);
+                }
+            }
         }
     }
 
@@ -86,4 +125,45 @@ namespace CG_lab_1
                 );
         }
     }
+
+    class LinelRastyaga : GlobalFilters
+    {
+        public override Bitmap proccessImage(Bitmap sourceImage, BackgroundWorker worker)
+        {
+            Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
+
+            GetMaxColor(sourceImage);
+            GetMinColor(sourceImage);
+
+            for (int i = 0; i < sourceImage.Width; i++)
+            {
+                worker.ReportProgress((int)((float)i / resultImage.Width * 100));
+
+                if (worker.CancellationPending)
+                {
+                    return null;
+                }
+
+                for (int j = 0; j < sourceImage.Height; j++)
+                {
+                    resultImage.SetPixel(i, j, calculateNewPixelColor(sourceImage, i, j));
+                }
+            }
+
+            return resultImage;
+        }
+
+        protected override Color calculateNewPixelColor(Bitmap sourseImage, int x, int y)
+        {
+            Color color = sourseImage.GetPixel(x, y);
+
+            int R = (color.R - minR) * 255 / (maxR - minR);
+            int G = (color.G - minG) * 255 / (maxG - minG);
+            int B = (color.B - minB) * 255 / (maxB - minB);
+
+            return Color.FromArgb(Clamp((int)R, 0, 255),
+                                  Clamp((int)G, 0, 255),
+                                  Clamp((int)B, 0, 255));
+        }
+    } // НЕ РАБОТАЕТ 
 }

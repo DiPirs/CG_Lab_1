@@ -250,6 +250,19 @@ namespace CG_lab_1
         }
     } // Резкость ( матричный )
 
+    class SharpnessStrongFilter : MatrixFilter
+    {
+        public SharpnessStrongFilter()
+        {
+            kernel = new float[3, 3]
+               {
+                   {  -1,  -1,   -1 },
+                   { -1,   9,  -1 },
+                   {  -1,  -1,   -1 }
+               };
+        }
+    } // Резкость сильнее, чем ранее написаная ( матричный )
+
     abstract class DoubleMatrixFilters : Filters
     {
         protected float[,] kernel1 = null;

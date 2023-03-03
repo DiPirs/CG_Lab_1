@@ -123,39 +123,45 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
-        private void размытиеToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void размытиеToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Filters filter = new BlurFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
-        private void размытиеПоГауссуToolStripMenuItem_Click(object sender, EventArgs e)
+        private void размытиеПоГауссуToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Filters filter = new GaussianFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
-        private void собельToolStripMenuItem_Click(object sender, EventArgs e)
+        private void собельToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Filters filter = new SobelFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
-        private void резкостьToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Filters filter = new SharpnessFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
-        }
-
-        private void щарраToolStripMenuItem_Click(object sender, EventArgs e)
+        private void щарраToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Filters filter = new SharraFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
-        private void прюиттаToolStripMenuItem_Click(object sender, EventArgs e)
+        private void прюиттаToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Filters filter = new PruittaFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void резкостьToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            Filters filter = new SharpnessFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void резкостьсильнееToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Filters filter = new SharpnessStrongFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
@@ -212,5 +218,11 @@ namespace CG_lab_1
             Filters filter = new GradFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
+
+        private void линейноеРастяжениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new LinelRastyaga();
+            backgroundWorker1.RunWorkerAsync(filter);
+        } // НЕ РАБОТАЕТ
     }
 }
