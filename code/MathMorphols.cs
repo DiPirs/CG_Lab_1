@@ -82,7 +82,7 @@ namespace CG_lab_1
             }
             return Color.FromArgb(maxR, maxG, maxB);
         }
-    } // расширение ( подавляет "белый" шум с потерями для площади объекта )
+    } // расширение ( подавляет "черный" шум с потерями для площади объекта )
 
     class ErosionFilter : MathMorphols
     {
@@ -110,7 +110,7 @@ namespace CG_lab_1
             }
             return Color.FromArgb(minR, minG, minB);
         }
-    } // сужение ( подавляет "черный" шум с потерями для площади объекта )
+    } // сужение ( подавляет "белый" шум с потерями для площади объекта )
 
     class OpeningFilter : MathMorphols
     {

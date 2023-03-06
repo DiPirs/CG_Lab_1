@@ -11,7 +11,6 @@ namespace CG_lab_1
 {
     public partial class Form1 : Form
     {
-        Bitmap image;
         Bitmap startImage;
         Bitmap[] historyImages = new Bitmap[sizeHistoryImage]; // массив, чтобы вернуться по фильтрам назад
 
@@ -47,7 +46,7 @@ namespace CG_lab_1
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            Bitmap newImage = ((Filters)e.Argument).processImage(image, backgroundWorker1);
+            Bitmap newImage = ((Filters)e.Argument).processImage(historyImages[indexHistoryImage], backgroundWorker1);
 
             if (backgroundWorker1.CancellationPending != true)
             {
@@ -88,9 +87,8 @@ namespace CG_lab_1
             {
                 indexHistoryImage++;
 
-                image = new Bitmap(LoadDialog.FileName);
                 historyImages[indexHistoryImage] = new Bitmap(LoadDialog.FileName);
-                startImage = historyImages[0];
+                startImage = historyImages[indexHistoryImage];
             }
             pictureBox1.Image = historyImages[indexHistoryImage];
             pictureBox1.Refresh();
@@ -126,8 +124,11 @@ namespace CG_lab_1
 
         private void вернутьКИсходномуToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            image = startImage;
-            pictureBox1.Image = image;
+            Bitmap[] returnToStart = new Bitmap[sizeHistoryImage];
+            historyImages = returnToStart;
+            indexHistoryImage = 0;
+            historyImages[indexHistoryImage] = startImage;
+            pictureBox1.Image = historyImages[indexHistoryImage];
             pictureBox1.Refresh();
         }
 
@@ -404,6 +405,12 @@ namespace CG_lab_1
             Filters filter = new GlassFilet();
             backgroundWorker1.RunWorkerAsync(filter);
 
+        }
+
+        private void линейноеРастяжениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new AutoLevelsFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
         }
     }
 }
