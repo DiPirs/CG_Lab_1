@@ -7,37 +7,48 @@ using System.Drawing;
 
 namespace CG_lab_1
 {
-    abstract class MathMorphols : Filters
+    class MathMorphols : Filters
     {
-        protected float[,] mask = null;
-        protected int radiusX;
-        protected int radiusY;
-
-        // === Для расширения, сужения, открытия, закрытия лучше этот использовать, лучше убирает шум ===
-        public MathMorphols()
+        protected static float[,] mask;
+        protected static int radiusX;
+        protected static int radiusY;
+        public static void creatMask(bool answer, float[,] newMask, int size)
         {
-            mask = new float[,] {
+            if (answer == false)
+            {
+                mask = new float[,] {
                 { 1, 1, 1, 1, 1 },
                 { 1, 1, 1, 1, 1 },
                 { 1, 1, 1, 1, 1 },
                 { 1, 1, 1, 1, 1 },
                 { 1, 1, 1, 1, 1 }};
 
-            radiusX = mask.GetLength(0) / 2;
-            radiusY = mask.GetLength(1) / 2;
+                radiusX = mask.GetLength(0) / 2;
+                radiusY = mask.GetLength(1) / 2;
+            }
+            else
+            {
+                mask = new float[size, size];
+
+                for (int i = 0; i < size; i++)
+                {
+                    for (int j = 0; j < size; j++)
+                    {
+                        mask[i, j] = newMask[i, j];
+                    }
+                }
+
+                radiusX = mask.GetLength(0) / 2;
+                radiusY = mask.GetLength(1) / 2;
+            }
         }
 
         // === Для TopHat,BlackHat,Grad лучше использовать такой структурный элемент ===
-        //public MathMorphols()
-        //{
-        //    mask = new float[,] {
+        //      mask = new float[,] {
         //        { 0, 1, 0 },
         //        { 1, 1, 1 },
         //        { 0, 1, 0,}};
 
-        //    radiusX = mask.GetLength(0) / 2;
-        //    radiusY = mask.GetLength(1) / 2;
-        //}
 
         protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
         {
@@ -156,7 +167,7 @@ namespace CG_lab_1
                         Clamp(color.G - color_closing.G, 0, 255),
                         Clamp(color.B - color_closing.B, 0, 255));
         }
-    } // Или же исходное фото - закрытие
+    } // Или же исходное фото минус закрытие
 
     class BlackHatFilter : MathMorphols
     {
@@ -165,8 +176,7 @@ namespace CG_lab_1
         public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
         {
             Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
-            Filters filter = new ErosionFilter(); // Так не правильно, если судить по формуле, но оно выдает то, что нужно
-            //Filters filter = new OpeningFilter(); - по сути, нам нужно вот это
+            Filters filter = new ErosionFilter();
             openingImage = filter.processImage(sourceImage, worker);
 
             for (int i = 0; i < sourceImage.Width; i++)
@@ -195,7 +205,7 @@ namespace CG_lab_1
                         Clamp(color.G - color_closing.G, 0, 255),
                         Clamp(color.B - color_closing.B, 0, 255));
         }
-    } // Или же открытие - исходное фото | Работает странно, разобраться
+    } // Или же открытие минус исходное фото
 
     class GradFilter : MathMorphols
     {
@@ -236,5 +246,5 @@ namespace CG_lab_1
                         Clamp(colorDilation.G - colorErosion.G, 0, 255),
                         Clamp(colorDilation.B - colorErosion.B, 0, 255));
         }
-    } // Или же расширение - сужение
+    } // Или же расширение минус сужение
 }

@@ -41,7 +41,9 @@ namespace CG_lab_1
 
             return value;
         }
-    }  
+    }
+
+    // ============================== Точечные фильтры ==============================
 
     class InvertFilter : Filters
     {
@@ -107,6 +109,7 @@ namespace CG_lab_1
         }
     } // увеличивание яркости ( точечный )
 
+    // =========== Геометрические ===========
     class MoveFilter : Filters
     {
         protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
@@ -214,6 +217,7 @@ namespace CG_lab_1
         }
     } // горизонтальные волны ( точечный )
 
+    // =========== Нелинейные ===========
     class MedianFilter : Filters
     {
         protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
@@ -250,6 +254,7 @@ namespace CG_lab_1
         }
     } // Медианный фильтр ( нелинейный )
 
+    // ============================== Матричные фильтры ==============================
     abstract class MatrixFilter : Filters
     {
         protected float[,] kernel = null;
@@ -291,6 +296,7 @@ namespace CG_lab_1
 
     }
 
+    // =========== Размытие ===========
     class BlurFilter : MatrixFilter
     {
         public BlurFilter()
@@ -360,6 +366,7 @@ namespace CG_lab_1
         }
     } // обычное размытие ( матричный )
 
+    // =========== Резкость ===========
     class SharpnessFilter : MatrixFilter
     {
         public SharpnessFilter()
@@ -386,6 +393,7 @@ namespace CG_lab_1
         }
     } // Резкость сильнее, чем ранее написаная ( матричный )
 
+    // =========== Выделение границ ===========
     abstract class DoubleMatrixFilters : Filters
     {
         protected float[,] kernel1 = null;
@@ -466,7 +474,7 @@ namespace CG_lab_1
                    {  1,  2,  1 }
                };
         }
-    } // Собель ( границы изображения, матричный )
+    } // Собель ( границы объектов, матричный )
 
     class SharraFilter : DoubleMatrixFilters
     {
@@ -486,7 +494,7 @@ namespace CG_lab_1
                    { -3, -10, -3 }
                };
         }
-    } // Щарра ( границы изображения, матричный )
+    } // Щарра ( границы объектов, матричный )
 
     class PruittaFilter : DoubleMatrixFilters
     {
@@ -506,6 +514,6 @@ namespace CG_lab_1
                    { 1, 1, 1 }
                };
         }
-    } // Приюитта ( границы изображения, матричный )
+    } // Приюитта ( границы объектов, матричный )
 }
 

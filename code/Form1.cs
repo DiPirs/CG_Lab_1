@@ -13,8 +13,20 @@ namespace CG_lab_1
     {
         Bitmap image;
         Bitmap startImage;
-        Bitmap undoImage;
-        //Filters lastFilter = null;
+        Bitmap[] historyImages = new Bitmap[sizeHistoryImage]; // массив, чтобы вернуться по фильтрам назад
+
+        static int sizeHistoryImage = 5;
+        static int indexHistoryImage = -1;
+
+        protected void newHistoryImage()
+        {
+            sizeHistoryImage *= 2;
+            Bitmap[] newHistoryImages = new Bitmap[sizeHistoryImage];
+
+            historyImages.CopyTo(newHistoryImages, 0);
+            historyImages = null;
+            historyImages = newHistoryImages;
+        } // выделение места для большего хранения фильтров
 
         public Form1()
         {
@@ -22,7 +34,7 @@ namespace CG_lab_1
 
         }
 
-        // === Визуал, backgroundWorker, кнопка "Отмена" ===
+        // =================== Визуал, backgroundWorker, кнопка "Отмена" ===================
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
 
@@ -39,8 +51,10 @@ namespace CG_lab_1
 
             if (backgroundWorker1.CancellationPending != true)
             {
-                undoImage = image;
-                image = newImage;
+                if (indexHistoryImage == sizeHistoryImage - 1) { newHistoryImage(); }
+
+                indexHistoryImage++;
+                historyImages[indexHistoryImage] = newImage;
             }
         }
 
@@ -53,7 +67,7 @@ namespace CG_lab_1
         {
             if (!e.Cancelled)
             {
-                pictureBox1.Image = image;
+                pictureBox1.Image = historyImages[indexHistoryImage];
                 pictureBox1.Refresh();
             }
             progressBar1.Value = 0;
@@ -64,7 +78,7 @@ namespace CG_lab_1
             backgroundWorker1.CancelAsync();
         } // Кнопка отмены загрузки
 
-        // === меню "Файл" ===
+        // =================== меню "Файл" ===================
         private void открытьToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             OpenFileDialog LoadDialog = new OpenFileDialog();
@@ -72,10 +86,13 @@ namespace CG_lab_1
 
             if (LoadDialog.ShowDialog() == DialogResult.OK) // Проверка файла
             {
+                indexHistoryImage++;
+
                 image = new Bitmap(LoadDialog.FileName);
-                startImage = image;
+                historyImages[indexHistoryImage] = new Bitmap(LoadDialog.FileName);
+                startImage = historyImages[0];
             }
-            pictureBox1.Image = image;
+            pictureBox1.Image = historyImages[indexHistoryImage];
             pictureBox1.Refresh();
         }
 
@@ -87,16 +104,24 @@ namespace CG_lab_1
 
             if (SaveDialog.ShowDialog() == DialogResult.OK)
             {
-                image.Save(SaveDialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                pictureBox1.Image.Save(SaveDialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
         }
 
-        // === меню "Правка" ===
+        // =================== меню "Правка" ===================
+
         private void вернутьНазадToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            image = undoImage;
-            pictureBox1.Image = image;
-            pictureBox1.Refresh();
+            if (indexHistoryImage != 0)
+            {
+                indexHistoryImage--;
+                pictureBox1.Image = historyImages[indexHistoryImage];
+                pictureBox1.Refresh();
+            }
+            else
+            {
+                MessageBox.Show("Уже отображается исходное изображение!");
+            }
         }
 
         private void вернутьКИсходномуToolStripMenuItem_Click(object sender, EventArgs e)
@@ -106,7 +131,7 @@ namespace CG_lab_1
             pictureBox1.Refresh();
         }
 
-        // === меню "Фильтры" ===
+        // =================== меню "Фильтры" ===================
         private void инверсияToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new InvertFilter();
@@ -131,6 +156,7 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
+        // === Размытие ===
         private void размытиеToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Filters filter = new BlurFilter();
@@ -148,7 +174,8 @@ namespace CG_lab_1
             Filters filter = new MotionBlurFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
-
+        
+        // === Выделение границ ===
         private void собельToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             Filters filter = new SobelFilter();
@@ -167,6 +194,7 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
+        // === Резкость ===
         private void резкостьToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             Filters filter = new SharpnessFilter();
@@ -179,6 +207,7 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
+        // === Глобальные и нелинейные ===
         private void серыйМирToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new GrayWorldFilter();
@@ -191,48 +220,155 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
+        // === Морфология ===
         private void расширениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new DilationFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new DilationFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new DilationFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
         private void сужениеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new ErosionFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new ErosionFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new ErosionFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
         private void открытиеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new OpeningFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new OpeningFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new OpeningFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
         private void закрытиеToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new ClosingFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new ClosingFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new ClosingFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
         private void topHatToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new TopHatFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new TopHatFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new TopHatFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
         private void blackHatToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new BlackHatFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new BlackHatFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new BlackHatFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
         private void gradToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Filters filter = new GradFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
+            Choice choice = new Choice();
+            choice.ShowDialog();
+            bool answer = choice.Answer;
+
+            if (answer == false)
+            {
+                Filters filter = new GradFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
+            else
+            {
+                NewStruct newStruct = new NewStruct();
+                newStruct.ShowDialog();
+
+                Filters filter = new GradFilter();
+                backgroundWorker1.RunWorkerAsync(filter);
+            }
         }
 
+        // === Геометрические ===
         private void переносToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new MoveFilter();
