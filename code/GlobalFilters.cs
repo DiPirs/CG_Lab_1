@@ -18,6 +18,8 @@ namespace CG_lab_1
         protected int maxG, minG;
         protected int maxB, minB;
 
+        protected long brightness;
+
         public void GetAverageColor(Bitmap sourceImage)
         {
             Color color = sourceImage.GetPixel(0, 0);
@@ -77,6 +79,30 @@ namespace CG_lab_1
                     minG = Math.Min(minG, color.G);
                 }
             }
+        }
+
+        public void GetBrightness(Bitmap sourseImage)
+        {
+            brightness = 0;
+
+            for (int i = 0; i < sourseImage.Width; i++)
+            {
+                for (int j = 0; j < sourseImage.Height; j++)
+                {
+                    long pix = 0;
+
+                    Color color = sourseImage.GetPixel(i, j);
+
+                    pix += color.R;
+                    pix += color.G;
+                    pix += color.B;
+                    pix /= 3;
+
+                    brightness += pix;
+                }
+            }
+
+            brightness /= sourseImage.Width * sourseImage.Height;
         }
     }
 
@@ -160,4 +186,175 @@ namespace CG_lab_1
                                   Clamp((int)newB, 0, 255));
         }
     }
+
+    class AutoContrast : GlobalFilters
+    {
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
+        {
+            Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
+
+            GetBrightness(sourceImage);
+
+            for (int i = 0; i < sourceImage.Width; i++)
+            {
+                worker.ReportProgress((int)(float)i / resultImage.Width);
+                if (worker.CancellationPending) { return null; }
+
+                for (int j = 0; j < sourceImage.Height; j++)
+                {
+                    resultImage.SetPixel(i, j, calculateNewPixelColor(sourceImage, i, j));
+                }
+            }
+
+            return resultImage;
+        }
+
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            float k = 1.2f;
+
+            Color sourceColor = sourceImage.GetPixel(x, y);
+
+            return Color.FromArgb(Clamp((int)(brightness + (sourceColor.R - brightness) * k), 0, 255),
+                                  Clamp((int)(brightness + (sourceColor.G - brightness) * k), 0, 255),
+                                  Clamp((int)(brightness + (sourceColor.B - brightness) * k), 0, 255));
+        }
+    } // повышение контрастности
+
+    class PerfectReflectorFilter : GlobalFilters
+    {
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
+        {
+            Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
+
+            GetMaxColor(sourceImage);
+
+            for (int i = 0; i < sourceImage.Width; i++)
+            {
+                worker.ReportProgress((int)((float)i / resultImage.Width * 100));
+
+                if (worker.CancellationPending)
+                {
+                    return null;
+                }
+
+                for (int j = 0; j < sourceImage.Height; j++)
+                {
+                    resultImage.SetPixel(i, j, calculateNewPixelColor(sourceImage, i, j));
+                }
+            }
+
+            return resultImage;
+        }
+
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            Color color = sourceImage.GetPixel(x, y);
+
+            float R = color.R * (255 / maxR);
+            float G = color.G * (255 / maxG);
+            float B = color.B * (255 / maxB);
+
+            return Color.FromArgb(
+                Clamp((int)R, 0, 255),
+                Clamp((int)G, 0, 255),
+                Clamp((int)B, 0, 255)
+                );
+        }
+    } // идеальный отражатель
+
+    class ColorCorrectionFilter : GlobalFilters
+    {
+        protected float dstR = 143; // вычислено путем тестов и считывания цветов с нормального изображения
+        protected float dstB = 134;
+        protected float dstG = 137;
+
+        protected float srcR;
+        protected float srcB;
+        protected float srcG;
+
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
+        {
+            Bitmap resultImage = new Bitmap(sourceImage.Width, sourceImage.Height);
+
+            int scrX = 214; // точка на стенке где-то
+            int scrY = 34;
+
+            Color srcColor = sourceImage.GetPixel(scrX, scrY);
+
+            srcR = srcColor.R;
+            srcG = srcColor.G;
+            srcB = srcColor.B;
+
+            for (int i = 0; i < sourceImage.Width; i++)
+            {
+                worker.ReportProgress((int)((float)i / resultImage.Width * 100));
+
+                if (worker.CancellationPending)
+                {
+                    return null;
+                }
+
+                for (int j = 0; j < sourceImage.Height; j++)
+                {
+                    resultImage.SetPixel(i, j, calculateNewPixelColor(sourceImage, i, j));
+                }
+            }
+
+            return resultImage;
+        }
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            Color color = sourceImage.GetPixel(x, y);
+
+            float R = color.R * (dstR / srcR);
+            float G = color.G * (dstG / srcG);
+            float B = color.B * (dstB / srcB);
+
+            return Color.FromArgb(
+                Clamp((int)R, 0, 255),
+                Clamp((int)G, 0, 255),
+                Clamp((int)B, 0, 255)
+                );
+        }
+    } // коррекция с опорным цветом
+
+    class MaxColorForEdges : GlobalFilters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int max_r = 0, max_g = 0, max_b = 0;
+            int radiusX = 1, radiusY = 1;
+
+            for (int k = -radiusX; k <= radiusX; k++)
+            {
+                for (int l = -radiusY; l <= radiusY; l++)
+                {
+                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                    Color color = sourceImage.GetPixel(idX, idY);
+
+                    max_r = Math.Max(max_r, color.R);
+                    max_g = Math.Max(max_g, color.G);
+                    max_b = Math.Max(max_b, color.B);
+                }
+            }
+            return Color.FromArgb(max_r, max_g, max_b);
+        }
+    } // для краев
+
+    class BrightnessEdges : MaxColorForEdges
+    {
+        public override Bitmap processImage(Bitmap sourceImage, BackgroundWorker worker)
+        {
+
+            Filters filter1 = new MedianFilterForEdges();
+            Filters filter2 = new SobelFilter();
+            Filters filter3 = new MaxColorForEdges();
+
+            return filter3.processImage(filter2.processImage(filter1.processImage(sourceImage, worker), worker), worker);
+
+        }
+    }  // свет. края 
 }

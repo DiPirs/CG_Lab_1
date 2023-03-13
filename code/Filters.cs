@@ -254,6 +254,42 @@ namespace CG_lab_1
         }
     } // Медианный фильтр ( нелинейный )
 
+    class MedianFilterForEdges : Filters
+    {
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            List<int> AllR = new List<int>();
+            List<int> AllG = new List<int>();
+            List<int> AllB = new List<int>();
+
+            int radiusX = 1;
+            int radiusY = 1;
+
+            for (int k = -radiusX; k <= radiusX; k++)
+            {
+                for (int l = -radiusY; l <= radiusY; l++)
+                {
+                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                    Color color = sourceImage.GetPixel(idX, idY);
+
+                    AllR.Add(color.R);
+                    AllG.Add(color.G);
+                    AllB.Add(color.B);
+                }
+            }
+
+            AllR.Sort();
+            AllG.Sort();
+            AllB.Sort();
+
+            return Color.FromArgb(AllR[8], AllG[8], AllB[8]);
+            // При медианной фильтрации (i,j)-му пикселу присваивается медианное значение яркости,
+            // т.е. такое значение, частота которого равна 0,5.
+        }
+    } // Медианный фильтр ( для светящихся краев)
+
     // ============================== Матричные фильтры ==============================
     abstract class MatrixFilter : Filters
     {
@@ -392,6 +428,51 @@ namespace CG_lab_1
                };
         }
     } // Резкость сильнее, чем ранее написаная ( матричный )
+   
+    // ======== Теснение ========
+    class EmbossFilter : MatrixFilter
+    {
+        public EmbossFilter()
+        {
+            kernel = new float[3, 3]
+               {
+                   {  0,  -1,  0 }, // с какой стороны падает свет
+                   { -1,   0,  1 },
+                   {  0,   1,  0 }
+               };
+        }
+
+        protected override Color calculateNewPixelColor(Bitmap sourceImage, int x, int y)
+        {
+            int radiusX = kernel.GetLength(0) / 2;
+            int radiusY = kernel.GetLength(1) / 2;
+
+            float resultR = 128; // делает серой фото
+            float resultG = 128;
+            float resultB = 128;
+
+            for (int l = -radiusX; l <= radiusX; l++)
+            {
+                for (int k = -radiusY; k <= radiusY; k++)
+                {
+                    int idX = Clamp(x + k, 0, sourceImage.Width - 1);
+                    int idY = Clamp(y + l, 0, sourceImage.Height - 1);
+
+                    Color neighbourColor = sourceImage.GetPixel(idX, idY);
+
+                    resultR += neighbourColor.R * kernel[k + radiusX, l + radiusY];
+                    resultG += neighbourColor.G * kernel[k + radiusX, l + radiusY];
+                    resultB += neighbourColor.B * kernel[k + radiusX, l + radiusY];
+                }
+            }
+
+            return Color.FromArgb(
+                Clamp((int)resultR, 0, 255),
+                Clamp((int)resultG, 0, 255),
+                Clamp((int)resultB, 0, 255)
+                );
+        }
+    }
 
     // =========== Выделение границ ===========
     abstract class DoubleMatrixFilters : Filters

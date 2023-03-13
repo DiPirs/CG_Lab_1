@@ -175,7 +175,7 @@ namespace CG_lab_1
             Filters filter = new MotionBlurFilter();
             backgroundWorker1.RunWorkerAsync(filter);
         }
-        
+
         // === Выделение границ ===
         private void собельToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -208,10 +208,47 @@ namespace CG_lab_1
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
+        // === Тиснение ===
+        private void тиснениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new EmbossFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
         // === Глобальные и нелинейные ===
         private void серыйМирToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Filters filter = new GrayWorldFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void линейноеРастяжениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new AutoLevelsFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void автоконтрастToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new AutoContrast();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void идеальныйОтражательToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new PerfectReflectorFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void коррекцияСОпорнымЦветомToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new ColorCorrectionFilter();
+            backgroundWorker1.RunWorkerAsync(filter);
+        }
+
+        private void светящиесяКраяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filters filter = new BrightnessEdges();
             backgroundWorker1.RunWorkerAsync(filter);
         }
 
@@ -405,12 +442,6 @@ namespace CG_lab_1
             Filters filter = new GlassFilet();
             backgroundWorker1.RunWorkerAsync(filter);
 
-        }
-
-        private void линейноеРастяжениеToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Filters filter = new AutoLevelsFilter();
-            backgroundWorker1.RunWorkerAsync(filter);
         }
     }
 }

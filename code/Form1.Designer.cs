@@ -52,8 +52,13 @@ namespace CG_lab_1
             this.резкостьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.резкостьToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.резкостьсильнееToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.тиснениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.глобальныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.серыйМирToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.линейноеРастяжениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.автоконтрастToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.идеальныйОтражательToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.коррекцияСОпорнымЦветомToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.нелинейныеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.медианныйToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.морфологическиеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,7 +87,7 @@ namespace CG_lab_1
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button1 = new System.Windows.Forms.Button();
-            this.линейноеРастяжениеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.светящиесяКраяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -193,7 +198,8 @@ namespace CG_lab_1
             this.матричныеToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.размытиеToolStripMenuItem,
             this.выделениеГраницToolStripMenuItem,
-            this.резкостьToolStripMenuItem1});
+            this.резкостьToolStripMenuItem1,
+            this.тиснениеToolStripMenuItem});
             this.матричныеToolStripMenuItem.Name = "матричныеToolStripMenuItem";
             this.матричныеToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.матричныеToolStripMenuItem.Text = "Матричные";
@@ -283,11 +289,22 @@ namespace CG_lab_1
             this.резкостьсильнееToolStripMenuItem1.Text = "Резкость (сильнее)";
             this.резкостьсильнееToolStripMenuItem1.Click += new System.EventHandler(this.резкостьсильнееToolStripMenuItem1_Click);
             // 
+            // тиснениеToolStripMenuItem
+            // 
+            this.тиснениеToolStripMenuItem.Name = "тиснениеToolStripMenuItem";
+            this.тиснениеToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.тиснениеToolStripMenuItem.Text = "Тиснение";
+            this.тиснениеToolStripMenuItem.Click += new System.EventHandler(this.тиснениеToolStripMenuItem_Click);
+            // 
             // глобальныеToolStripMenuItem
             // 
             this.глобальныеToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.серыйМирToolStripMenuItem,
-            this.линейноеРастяжениеToolStripMenuItem});
+            this.линейноеРастяжениеToolStripMenuItem,
+            this.автоконтрастToolStripMenuItem,
+            this.идеальныйОтражательToolStripMenuItem,
+            this.коррекцияСОпорнымЦветомToolStripMenuItem,
+            this.светящиесяКраяToolStripMenuItem});
             this.глобальныеToolStripMenuItem.Name = "глобальныеToolStripMenuItem";
             this.глобальныеToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.глобальныеToolStripMenuItem.Text = "Глобальные";
@@ -295,9 +312,37 @@ namespace CG_lab_1
             // серыйМирToolStripMenuItem
             // 
             this.серыйМирToolStripMenuItem.Name = "серыйМирToolStripMenuItem";
-            this.серыйМирToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
+            this.серыйМирToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.серыйМирToolStripMenuItem.Text = "Серый мир";
             this.серыйМирToolStripMenuItem.Click += new System.EventHandler(this.серыйМирToolStripMenuItem_Click);
+            // 
+            // линейноеРастяжениеToolStripMenuItem
+            // 
+            this.линейноеРастяжениеToolStripMenuItem.Name = "линейноеРастяжениеToolStripMenuItem";
+            this.линейноеРастяжениеToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.линейноеРастяжениеToolStripMenuItem.Text = "Линейное растяжение";
+            this.линейноеРастяжениеToolStripMenuItem.Click += new System.EventHandler(this.линейноеРастяжениеToolStripMenuItem_Click);
+            // 
+            // автоконтрастToolStripMenuItem
+            // 
+            this.автоконтрастToolStripMenuItem.Name = "автоконтрастToolStripMenuItem";
+            this.автоконтрастToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.автоконтрастToolStripMenuItem.Text = "Автоконтраст";
+            this.автоконтрастToolStripMenuItem.Click += new System.EventHandler(this.автоконтрастToolStripMenuItem_Click);
+            // 
+            // идеальныйОтражательToolStripMenuItem
+            // 
+            this.идеальныйОтражательToolStripMenuItem.Name = "идеальныйОтражательToolStripMenuItem";
+            this.идеальныйОтражательToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.идеальныйОтражательToolStripMenuItem.Text = "Идеальный отражатель";
+            this.идеальныйОтражательToolStripMenuItem.Click += new System.EventHandler(this.идеальныйОтражательToolStripMenuItem_Click);
+            // 
+            // коррекцияСОпорнымЦветомToolStripMenuItem
+            // 
+            this.коррекцияСОпорнымЦветомToolStripMenuItem.Name = "коррекцияСОпорнымЦветомToolStripMenuItem";
+            this.коррекцияСОпорнымЦветомToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.коррекцияСОпорнымЦветомToolStripMenuItem.Text = "Коррекция с опорным цветом";
+            this.коррекцияСОпорнымЦветомToolStripMenuItem.Click += new System.EventHandler(this.коррекцияСОпорнымЦветомToolStripMenuItem_Click);
             // 
             // нелинейныеToolStripMenuItem
             // 
@@ -515,12 +560,12 @@ namespace CG_lab_1
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // линейноеРастяжениеToolStripMenuItem
+            // светящиесяКраяToolStripMenuItem
             // 
-            this.линейноеРастяжениеToolStripMenuItem.Name = "линейноеРастяжениеToolStripMenuItem";
-            this.линейноеРастяжениеToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.линейноеРастяжениеToolStripMenuItem.Text = "Линейное растяжение";
-            this.линейноеРастяжениеToolStripMenuItem.Click += new System.EventHandler(this.линейноеРастяжениеToolStripMenuItem_Click);
+            this.светящиесяКраяToolStripMenuItem.Name = "светящиесяКраяToolStripMenuItem";
+            this.светящиесяКраяToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.светящиесяКраяToolStripMenuItem.Text = "Светящиеся края";
+            this.светящиесяКраяToolStripMenuItem.Click += new System.EventHandler(this.светящиесяКраяToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -599,6 +644,11 @@ namespace CG_lab_1
         private System.Windows.Forms.ToolStripMenuItem эффектСтеклаToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem размытиеВДвиженииToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem линейноеРастяжениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem тиснениеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem автоконтрастToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem идеальныйОтражательToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem коррекцияСОпорнымЦветомToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem светящиесяКраяToolStripMenuItem;
     }
 }
 
